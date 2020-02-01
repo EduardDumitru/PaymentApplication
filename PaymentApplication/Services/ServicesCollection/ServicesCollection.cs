@@ -15,6 +15,7 @@ namespace PaymentApplication.Services.ServicesCollection
             services.AddSingleton<ICheapPaymentService, CheapPaymentService>();
             services.AddSingleton<IExpensivePaymentService, ExpensivePaymentService>();
             services.AddSingleton<IPremiumPaymentService, PremiumPaymentService>();
+            services.AddScoped<IFileService, FileService>();
         }
     }
 }

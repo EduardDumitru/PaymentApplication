@@ -29,12 +29,13 @@ namespace PaymentApplication
 
             // Get Service and call method
             var paymentManager = serviceProvider.GetService<IPaymentManager>();
+            var fileService = serviceProvider.GetService<IFileService>();
 
             var canSaveToJson = await paymentManager.ValidateAndPay(goodCreditCard);
 
             if (canSaveToJson)
             {
-                await paymentManager.SaveToJson(goodCreditCard);
+                await fileService.SaveToJson(goodCreditCard);
             }
 
             // Error scenario

@@ -11,5 +11,6 @@ namespace PaymentApplication.Shared
         public const decimal AmountExpensiveLimit = 500M;
         public const int CreditCardNumberDigitsNumber = 16;
         public const int SecurityNumberDigitsNumber = 3;
+        public const string FilePath = @"d:\payments.json";
     }
 }
