@@ -45,7 +45,7 @@ namespace PaymentApplication.Services
                 return await ExpensivePaymentVerification(creditCard);
             }
 
-            if (creditCard.Amount > (decimal) SharedValues.AmountExpensiveLimit)
+            if (creditCard.Amount > SharedValues.AmountExpensiveLimit)
             {
                 return await PremiumPaymentVerification(creditCard);
             }
@@ -143,6 +143,7 @@ namespace PaymentApplication.Services
             return Task.FromResult(success);
         }
 
+        //I made separate methods because maybe someone will want to add some more logic to them outside their class
         private async Task<bool> CheapPaymentVerification(CreditCard creditCard)
         {
             return await _cheapPaymentService.VerifyPayment(creditCard.Amount);
@@ -156,21 +157,13 @@ namespace PaymentApplication.Services
                 return true;
             }
 
+            Console.WriteLine("Expensive Payment could not be processed. We will try to process it with Cheap Payment.");
             return await _cheapPaymentService.VerifyPayment(creditCard.Amount);
         }
 
         private async Task<bool> PremiumPaymentVerification(CreditCard creditCard)
         {
-            for (var tries = 0; tries < 3; tries++)
-            {
-                var success = await _premiumPaymentService.VerifyPayment(creditCard.Amount);
-                if (success)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return await _premiumPaymentService.VerifyPayment(creditCard.Amount);
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PaymentApplication.Services
 {
     public class PremiumPaymentService : IPremiumPaymentService
     {
-        public Task<bool> VerifyPayment(decimal amount)
+        public async Task<bool> VerifyPayment(decimal amount)
         {
             try
             {
@@ -15,19 +16,31 @@ namespace PaymentApplication.Services
                 // That's why this is in a try catch
                 if (amount > 500)
                 {
-                    Console.WriteLine("Premium Payment has been processed successfully…");
+                    for (var tries = 0; tries < 3; tries++)
+                    {
+                        var success = await VerifyPayment(amount);
+                        if (success)
+                        {
+                            Console.WriteLine("Premium Payment has been processed successfully…");
+                            return true;
+                        }
+
+                        Console.WriteLine("There was an error. We will retry the premium payment process.");
+                        Thread.Sleep(1000);
+                    }
                 }
                 else
                 {
                     throw new Exception("You cannot use this service.");
                 }
 
-                return Task.FromResult(true);
+                Console.WriteLine("There was an error. We couldn't finalize the premium payment process");
+                return false;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return Task.FromResult(false);
+                return false;
             }
         }
     }
