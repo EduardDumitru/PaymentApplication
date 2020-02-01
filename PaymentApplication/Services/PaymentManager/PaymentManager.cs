@@ -55,32 +55,41 @@ namespace PaymentApplication.Services
 
         public async Task SaveToJson(CreditCard creditCard)
         {
-            const string filePath = @"d:\payments.json";
-            var creditCards = new List<CreditCard>();
-            // Find if file exists
-            if (File.Exists(filePath))
+            try
             {
-                // Take all of the existing payments from the json file and add the one that we just made to it
-                // This way we won't delete the existing payments from the file
-                using var reader = new StreamReader(filePath);
-                string json = reader.ReadToEnd();
-                creditCards = JsonConvert.DeserializeObject<List<CreditCard>>(json);
-            }
-            else
-            {
-                // serialize JSON to a string and then write string to a file
-                File.WriteAllText(filePath, JsonConvert.SerializeObject(creditCard));
-            }
+                const string filePath = @"d:\payments.json";
+                var creditCards = new List<CreditCard>();
+                // Find if file exists
+                if (File.Exists(filePath))
+                {
+                    // Take all of the existing payments from the json file and add the one that we just made to it
+                    // This way we won't delete the existing payments from the file
+                    using var reader = new StreamReader(filePath);
+                    string json = reader.ReadToEnd();
+                    creditCards = JsonConvert.DeserializeObject<List<CreditCard>>(json);
+                }
+                else
+                {
+                    // serialize JSON to a string and then write string to a file
+                    File.WriteAllText(filePath, JsonConvert.SerializeObject(creditCard));
+                }
 
-            // serialize JSON directly to a file
-            await using (StreamWriter file = File.CreateText(filePath))
-            {
-                creditCards.Add(creditCard);
-                var serializer = new JsonSerializer();
-                serializer.Serialize(file, creditCards);
-            }
+                // serialize JSON directly to a file
+                await using (StreamWriter file = File.CreateText(filePath))
+                {
+                    creditCards.Add(creditCard);
+                    var serializer = new JsonSerializer();
+                    serializer.Serialize(file, creditCards);
+                }
 
-            Console.WriteLine("It was saved to JSON with success");
+                Console.WriteLine("It was saved to JSON with success");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
 
         private static Task<bool> MandatoryVerification(CreditCard creditCard)
@@ -117,7 +126,8 @@ namespace PaymentApplication.Services
                 success = false;
             }
 
-            if (creditCard.SecurityCode.HasValue && creditCard.SecurityCode != SharedValues.SecurityNumberDigitsNumber)
+            if (creditCard.SecurityCode.HasValue 
+                && creditCard.SecurityCode.Value.ToString().Length != SharedValues.SecurityNumberDigitsNumber)
             {
                 Console.WriteLine("Security Code must be exactly " +
                                   $"{SharedValues.SecurityNumberDigitsNumber} digits");

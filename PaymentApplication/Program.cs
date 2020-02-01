@@ -15,10 +15,11 @@ namespace PaymentApplication
         {
             var goodCreditCard = new CreditCard
             {
-                Amount = 22M,
+                Amount = 1M,
                 CardHolder = "FirstName LastName",
                 ExpirationDate = new DateTime(2022, 05, 29),
-                CreditCardNumber = "5342123452999213"
+                CreditCardNumber = "5342123452999213",
+                SecurityCode = 213
             };
 
             IServiceCollection services = new ServiceCollection();
