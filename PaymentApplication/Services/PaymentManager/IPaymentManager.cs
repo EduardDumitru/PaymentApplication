@@ -6,8 +6,9 @@ using PaymentApplication.Domain;
 
 namespace PaymentApplication.Services
 {
-    public interface IExecutePayment
+    public interface IPaymentManager
     {
         Task<bool> ValidateAndPay(CreditCard creditCard);
+        Task SaveToJson(CreditCard creditCard);
     }
 }

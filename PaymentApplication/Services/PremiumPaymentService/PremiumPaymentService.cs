@@ -19,7 +19,7 @@ namespace PaymentApplication.Services
                 }
                 else
                 {
-                    throw new Exception("You can not use this service.");
+                    throw new Exception("You cannot use this service.");
                 }
 
                 return Task.FromResult(true);

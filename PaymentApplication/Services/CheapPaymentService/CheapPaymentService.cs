@@ -13,13 +13,13 @@ namespace PaymentApplication.Services
             {
                 // We should call the external service for expensive payment and check if it is available
                 // That's why this is in a try catch
-                if (amount >= 21 && amount <= 500)
+                if (amount < 21)
                 {
-                    Console.WriteLine("Expensive Payment has been processed successfully…");
+                    Console.WriteLine("Cheap Payment has been processed successfully…");
                 }
                 else
                 {
-                    throw new Exception("You can not use this service.");
+                    throw new Exception("You cannot use this service.");
                 }
 
                 return Task.FromResult(true);

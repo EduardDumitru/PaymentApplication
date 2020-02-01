@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using PaymentApplication.Domain;
 using PaymentApplication.Services;
 
@@ -10,20 +13,38 @@ namespace PaymentApplication
     {
         private static async Task Main()
         {
-            var creditCard = new CreditCard()
+            var goodCreditCard = new CreditCard
             {
-                Amount = 2,
+                Amount = 22M,
                 CardHolder = "FirstName LastName",
-                ExpirationDate = new DateTime(2021, 05, 29),
-                CreditCardNumber = "5342123452999"
+                ExpirationDate = new DateTime(2022, 05, 29),
+                CreditCardNumber = "5342123452999213"
             };
 
-            var container = ContainerConfig.Configure();
-            await using (var scope = container.BeginLifetimeScope())
+            IServiceCollection services = new ServiceCollection();
+            var startup = new Startup();
+            startup.ConfigureServices(services);
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            // Get Service and call method
+            var paymentManager = serviceProvider.GetService<IPaymentManager>();
+
+            var canSaveToJson = await paymentManager.ValidateAndPay(goodCreditCard);
+
+            if (canSaveToJson)
             {
-                var app = scope.Resolve<IExecutePayment>();
-                await app.ValidateAndPay(creditCard);
+                await paymentManager.SaveToJson(goodCreditCard);
             }
+
+            // Error scenario
+            var errorCreditCard = new CreditCard
+            {
+                Amount = 2234M,
+                CardHolder = "FirstName LastName",
+                ExpirationDate = new DateTime(2011, 05, 29),
+                CreditCardNumber = "534212345299921322"
+            };
+            await paymentManager.ValidateAndPay(errorCreditCard);
 
             Console.ReadLine();
         }
